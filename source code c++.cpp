@@ -138,7 +138,7 @@ int main() {
     cout<<"|                                              |\n"; 
     cout<<"| -------------------------------------------- |\n"; 
 	cout<<"| Choose Mode (1-4):                           |\n"; 
-    cout<<"| 1.Tim duong di toi uu cho robot              |\n";
+    cout<<"| 1.Tim duong di toi uu cho robot(Normal Mode) |\n";
 	cout<<"| 2.Tim duong di toi uu cho 2 robot và so sanh |\n";
 	cout<<"| 3.Dat vi tri bat ky cho 2 robot              |\n";
 	cout<<"| 4.Thoat (ESC)                                |\n";
@@ -226,6 +226,7 @@ int main() {
     			// In ra duong di va so buoc cho robot 2
     			output_file << endl;
     			output_file << endl; 
+    			
     			output_file << "Robot 2 "<< endl;
     			output_file <<"Steps Robot: "<< size2 << endl; 
     			output_file << "Robot Path: "; 
@@ -233,12 +234,14 @@ int main() {
         			output_file << arr2[i] << " ";
         			score2+=arr2[i]; 
     			}
+    			
     			output_file << endl; 
     			output_file <<"Score: "<<score2; 
     			
 				// In ra vi tri ma hai robot di trung nhau
 				output_file << endl; 
 				output_file << endl; 
+				
     			output_file << "Vi tri ma hai robot di trung nhau:" << endl;
     			for (int i = 0; i < size1; i++) {
         			for (int j = 0; j < size2; j++) {
@@ -269,8 +272,31 @@ int main() {
     			cout << "duong di va so buoc cua 2 robot duoc ghi vào file output.txt" << endl;
     			break;
 				}
-		case 3:
+		case 6:
+			{
 			
+				cout<<"0=======================================================================0\n";
+				cout<<"|                                                                       |\n"; 
+				cout<<"|                          ~~~RULES~~~                                  |\n";
+				cout<<"|                                                                       |\n";
+				cout<<"| + Robots di theo 4 huong (tren, duoi, trai, phai)                     |\n";
+				cout<<"|                                                                       |\n";
+				cout<<"| +Robots se di theo huong so co gia tri lon hon gia tri hien tai       |\n";
+				cout<<"|                                                                       |\n";
+				cout<<"| +O che do 1 Robot se tu dong di chuyen tu vi tri ban dau              |\n";
+				cout<<"| ma nguoi choi dat                                                     |\n";
+				cout<<"|                                                                       |\n"; 
+				cout<<"| +O che do 2 nguoi choi se dat vi tri bat dau cho 2 robot              |\n";
+				cout<<"| sau do se in ra nhung vi tri ma chung trung nhau va so sanh           |\n";
+				cout<<"| con robot nao co so diem cao hon se thang                             |\n";
+				cout<<"|                                                                       |\n"; 
+				cout<<"| +O che do 3 nguoi choi se nhap vi tri bat dau cho 2 con robot         |\n";
+				cout<<"| nhung vi tri ma robot di qua roi se khong duoc di nua sau khi 2 robot |\n";
+				cout<<"| hoan thanh duong di, robot nao co so diem cao hon se thang            |\n"; 
+				cout<<"|                                                                       |\n";
+				cout<<"0=======================================================================0\n"; 
+				cout<<endl; 
+			}
 			break;
 		
 		case 4: 
@@ -278,9 +304,19 @@ int main() {
 			break; 
 		
 		case 5:
+			cout<<"_________________________________________________\n"; 
+			cout<<endl; 
+			cout<<"     Student: Vu Nguyen Phuong\n";
+			cout<<endl; 
+			cout<<"     MSSV: 2251120437\n";
+			cout<<endl; 
+			cout<<"     Class: CN22H\n";
+			cout<<endl; 
+			cout<<"     School: University Of Transport HCM City\n"; 
+			cout<<"_________________________________________________\n"; 
 			break;
 			
-		case 6:
+		case 3:
 			break;
 			
 		case 7:
