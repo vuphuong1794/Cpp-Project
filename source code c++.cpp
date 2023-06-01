@@ -126,28 +126,71 @@ void toiuu2robot(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_lengt
 	b_length2--;
 	visited[x1][y1]=false;
 	visited[x2][y2]=false; 
-	 
 } 
 
+void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, int b_length2, int total1, int total2){
+	if(!isValidMove(x1, y1) || !isValidMove(x2, y2)){
+		if(visited[x1][y1]==false || visited[x2][y2]==false){
+			if(totalArray(b1, b_length1) == total1 || totalArray(b2, b_length2) == total2){
+				size1=b_length1;
+				size2=b_length2;
+				for(int i=0; i<b_length1; i++){
+			 		arr1[i]=b1[i]; 
+				} 
+				for(int i=0; i<b_length2; i++){
+					arr2[i]=b2[i]; 
+				} 
+			}
+			return; 
+			} 
+		}
+	//cap nhat duong di va tung gia tri
+	b1[b_length1]=matran[x1][y1];
+	b2[b_length2]=matran[x2][y2];
+	b_length1++;
+	b_length2++;
+	total1+=matran[x1][y1];
+	total2+=matran[x2][y2]; 
+	
+	//danh dau o da di qua
+	visited[x1][y1]=true;
+	visited[x2][y2]=true;
+	
+	//di chuyen toi o co gia tri lon nhat xuung quanh robot1
+	moveToMaxNeighbor(x1, y1);
+	//di chuyen toi o co gia tri lon nhat xung quanh robot2
+	moveToMaxNeighbor(x2, y2);
+	
+	//de quy tim duong di toi uu cho 2 robot
+	toiuu2robot(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2);
+	
+	//tro lai vi tri ban dau và visited
+	b_length1--;
+	b_length2--;
+	visited[x1][y1]=false;
+	visited[x2][y2]=false;
+} 
 int main() {
 	int choice, total, total1; 
 	do{
-    cout<<"0=================~~~@MENU@~~~=================0\n";
-    cout<<"|                                              |\n"; 
-    cout<<"|    	      ~~$GREEDY ROBOTS$~~	       |\n"; 
-    cout<<"|                                              |\n"; 
-    cout<<"| -------------------------------------------- |\n"; 
-	cout<<"| Choose Mode (1-4):                           |\n"; 
-    cout<<"| 1.Tim duong di toi uu cho robot(Normal Mode) |\n";
-	cout<<"| 2.Tim duong di toi uu cho 2 robot và so sanh |\n";
-	cout<<"| 3.Dat vi tri bat ky cho 2 robot              |\n";
-	cout<<"| 4.Thoat (ESC)                                |\n";
-	cout<<"| -------------------------------------------- |\n"; 
-	cout<<"|    	~~~~~~~Other Information~~~~~~         |\n";
-	cout<<"| 5. About Me		                       |\n"; 
-	cout<<"| 6. Game Rules                                |\n"; 
-	cout<<"| 7. See My Other Project!                     |\n"; 
-	cout<<"0==============================================0\n"; 
+    cout<<"0=====================~~~@MENU@~~~===================0\n";
+    cout<<"|                                                    |\n"; 
+    cout<<"|    	          ~~$GREEDY ROBOTS$~~	             |\n"; 
+    cout<<"|                                                    |\n"; 
+    cout<<"| -------------------------------------------------- |\n"; 
+	cout<<"| Choose Mode (1-4):                                 |\n"; 
+    cout<<"| 1.Tim duong di toi uu cho robot(Normal Mode).      |\n";
+	cout<<"| 2.Tim duong di toi uu cho 2 robot va khong duoc    |\n";
+	cout<<"| di lai nhung vi tri ma robot da di.                |\n"; 
+	cout<<"| va cac diem trung.                                 |\n";
+	cout<<"| 3.Dat vi tri bat ky cho 2 robot ko di lai vtri cu. |\n";
+	cout<<"| 4.Thoat (ESC).                                     |\n";
+	cout<<"| --------------------------------------------       |\n"; 
+	cout<<"|    	    ~~~~~~~Other Information~~~~~~           |\n";
+	cout<<"| 5. About Me.		                             |\n"; 
+	cout<<"| 6. Game Rules                                      |\n"; 
+	cout<<"| 7. See My Other Project!                           |\n"; 
+	cout<<"0====================================================0\n"; 
 	cin>>choice;
 	
 	ifstream input_file("input.txt");
@@ -272,6 +315,97 @@ int main() {
     			cout << "duong di va so buoc cua 2 robot duoc ghi vào file output.txt" << endl;
     			break;
 				}
+				
+		case 3:
+			{
+				int score1=0, score2=0; 
+        		int start_x1, start_y1;
+        		int start_x2, start_y2;
+        		int trung[100], t=0; 
+				cout<<"nhap vi tri bat dau cua robot 1: \n";
+				cin>>start_x1>>start_y1;
+				cout<<"nhap vi tri bat dau cua robot 2: \n";
+				cin>>start_x2>>start_y2; 
+				
+        		// Goi hàm tim duong di toi uu cho 2 robot
+    			toiuu2robot(start_x1, start_y1, start_x2, start_y2, arr1, arr2, 0, 0, 0, 0);
+
+    			// Ghi ket qua vào file output.txt
+    			ofstream output_file("output.txt");
+    			if (!output_file) {
+        			cout << "Không thay file output.txt" << endl;
+        			break;
+    			}
+
+    			// In ra duong di va so buoc cho robot 1
+    			output_file << "Robot 1 "<< endl;
+    			output_file <<"Steps Robot: "<< size2 << endl; 
+    			output_file << "Robot Path: "; 
+    			for(int i=0; i<size1; i++){
+    				output_file << arr1[i] <<" ";
+					score1+=arr1[i]; 
+					trung[t]=arr1[i];
+					t++; 
+				} 
+				
+				output_file << endl; 
+    			output_file <<"Score: "<<score1
+				; 
+    			// In ra duong di va so buoc cho robot 2
+    			output_file << endl;
+    			output_file << endl; 
+    			
+    			output_file << "Robot 2 "<< endl;
+    			output_file <<"Steps Robot: "<< size2 << endl; 
+    			output_file << "Robot Path: "; 
+    			for (int i = 0; i < size2; i++) {
+        			if(arr2[i]!=trung[i]){
+        				output_file << arr2[i] <<" ";
+						score2+=arr2[i];
+						break; 
+					} 
+    			}
+    			
+    			output_file << endl; 
+    			output_file <<"Score: "<<score2; 
+    			
+    			// So sanh so buoc cua hai robot
+    			if (total1 < total) {
+        			output_file << endl;
+        			output_file << "Robot 1 Win!" << endl;
+    			} 
+				else if (total1 > total) {
+        			output_file << endl;
+        			output_file << "Robot 2 Win!" << endl;
+    			} 
+				else {
+        			output_file << endl;
+        			output_file << "Draw!" << endl;
+    			}
+    			output_file.close();
+    			cout << "duong di va so buoc cua 2 robot duoc ghi vào file output.txt" << endl;
+			}
+			break;
+		
+		case 4: 
+			{
+				
+			}
+			break; 
+		
+		case 5:
+			cout<<"_________________________________________________\n"; 
+			cout<<endl; 
+			cout<<"     Student: Vu Nguyen Phuong\n";
+			cout<<endl; 
+			cout<<"     MSSV: 2251120437\n";
+			cout<<endl; 
+			cout<<"     Class: CN22H\n";
+			cout<<endl; 
+			cout<<"     School: University Of Transport HCM City\n"; 
+			cout<<"_________________________________________________\n"; 
+			break;
+			
 		case 6:
 			{
 			
@@ -298,34 +432,21 @@ int main() {
 				cout<<endl; 
 			}
 			break;
-		
-		case 4: 
-		
-			break; 
-		
-		case 5:
-			cout<<"_________________________________________________\n"; 
-			cout<<endl; 
-			cout<<"     Student: Vu Nguyen Phuong\n";
-			cout<<endl; 
-			cout<<"     MSSV: 2251120437\n";
-			cout<<endl; 
-			cout<<"     Class: CN22H\n";
-			cout<<endl; 
-			cout<<"     School: University Of Transport HCM City\n"; 
-			cout<<"_________________________________________________\n"; 
-			break;
-			
-		case 3:
-			break;
 			
 		case 7:
+			{
+				cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"; 
+				cout<<"  Check out my other projects on GitHub\n";
+				cout<<"  GitHub account: vuphuong1794\n";
+				cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"; 
+			}
 			break;
 			 
 		default:
 			cout<<"lua chon cua ban ko hop le"; 
 		}
 		cout<<endl; 
+		
 	}while(choice != 4);
 	
     return 0;
