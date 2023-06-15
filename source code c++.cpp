@@ -1,17 +1,73 @@
 #include <iostream>
 #include <fstream>
-
+#include <unistd.h>
 using namespace std;
 
-int matran[100][100];
-bool visited[100][100];
 int arr[1000]; 
 int arr1[1000]; //luu tru duong di robot 1 
 int arr2[1000]; //luu tru duong di robot 2 
+
 int size = 0;  
 int size1 = 0; //so buoc robot 1 
-int size2 = 0; //so buoc robot 2 
+int size2 = 0; //so buoc robot 2
+ 
+int matran[100][100];
+bool visitedByRobot1[100][100]; 
+bool visited[100][100];
 int rows, cols;
+
+int board[][5]={{2, 1, 14, 12, 17},
+				{3, 16, 22, 91, 23},
+				{4, 56, 87, 31, 65},
+				{27, 43, 90, 100, 101},
+				{76, 54, 32, 99, 66},
+				{178, 154, 150, 200, 543}};
+void get_robotMove() {
+    // Ðánh d?u nh?ng ðý?ng ði t?i ýu c?a robot 1 là 'x'
+    for (int i = 0; i < size1; i++) {
+        int position = arr1[i];
+        int row = position / 5;
+        int col = position % 5;
+        board[row][col] = 'x';
+    }
+
+    // Ðánh d?u nh?ng ðý?ng ði t?i ýu c?a robot 2 là 'x'
+    for (int i = 0; i < size2; i++) {
+        int position = arr2[i];
+        int row = position / 5;
+        int col = position % 5;
+        board[row][col] = 'x';
+    }
+}
+void drawBoard(){
+	cout<<"_____"<<"______"<<"_____"<<"_____"<<"______"<<endl; 
+	cout<<"| "<< board[0][0]<< "  | "<< board[0][1]<< "  | "<< board[0][2]<< " | "<< board[0][3]<< " | "<< board[0][4]<< "  |"<<endl;
+	cout<<"|----|"<<"----|"<<"----|"<<"----|"<<"-----|"<<endl; 
+	cout<<"| "<< board[1][0]<< "  | "<< board[1][1]<< " | "<< board[1][2]<< " | "<< board[1][3]<< " | "<< board[1][4]<< "  |"<<endl;
+	cout<<"|----|"<<"----|"<<"----|"<<"----|"<<"-----|"<<endl;
+	cout<<"| "<< board[2][0]<< "  | "<< board[2][1]<< " | "<< board[2][2]<< " | "<< board[2][3]<< " | "<< board[2][4]<< "  |"<<endl; 
+	cout<<"|----|"<<"----|"<<"----|"<<"----|"<<"-----|"<<endl;
+	cout<<"| "<< board[3][0]<< " | "<< board[3][1]<< " | "<< board[3][2]<< " |"<< board[3][3]<< " | "<< board[3][4]<< " |"<<endl;
+	cout<<"|----|"<<"----|"<<"----|"<<"----|"<<"-----|"<<endl;
+	cout<<"| "<< board[4][0]<< " | "<< board[4][1]<< " | "<< board[4][2]<< " | "<< board[4][3]<< " | "<< board[4][4]<< "  | "<<endl;
+	cout<<"|----|"<<"----|"<<"----|"<<"----|"<<"-----|"<<endl;
+	cout<<"|"<< board[5][0]<< " |"<< board[5][1]<< " |"<< board[5][2]<< " |"<< board[5][3]<< " |"<< board[5][4]<< "  |"<<endl;
+	cout<<"|----"<<"----"<<"----"<<"----"<<"---------|"<<endl;
+	
+} 
+ 
+ void printUpdatedBoard() {
+    cout << "_____" << "______" << "_____" << "_____" << "______" << endl;
+    for (int i = 0; i < rows; i++) {
+        cout << "| ";
+        for (int j = 0; j < cols; j++) {
+            cout << board[i][j] << "  | ";
+        }
+        cout << endl;
+        cout << "|----|" << "----|" << "----|" << "----|" << "-----|" << endl;
+    }
+}
+
 
 // Hàm tính tinh tung gia tri cua 1 mang 
 int totalArray(int arr[], int size) {
@@ -26,6 +82,10 @@ int totalArray(int arr[], int size) {
 bool isValidMove(int x, int y) {
     return (x >= 0 && x < rows && y >= 0 && y < cols && !visited[x][y]);
 }
+
+bool isValidMoveRobot1(int x, int y){
+	return (isValidMove(x, y) && !visitedByRobot1[x][y]); 
+} 
 
 // Hàm di chuyen den o co gia tri lon nhat xung quanh
 void moveToMaxNeighbor(int& x, int& y) {
@@ -129,8 +189,7 @@ void toiuu2robot(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_lengt
 } 
 
 void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, int b_length2, int total1, int total2){
-	if(!isValidMove(x1, y1) || !isValidMove(x2, y2)){
-		if(visited[x1][y1]==false || visited[x2][y2]==false){
+	if(!isValidMove(x1, y1) || !isValidMoveRobot1(x2, y2)){
 			if(totalArray(b1, b_length1) == total1 || totalArray(b2, b_length2) == total2){
 				size1=b_length1;
 				size2=b_length2;
@@ -143,18 +202,17 @@ void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, 
 			}
 			return; 
 			} 
-		}
-	//cap nhat duong di va tung gia tri
-	b1[b_length1]=matran[x1][y1];
-	b2[b_length2]=matran[x2][y2];
-	b_length1++;
-	b_length2++;
-	total1+=matran[x1][y1];
-	total2+=matran[x2][y2]; 
+		//cap nhat duong di va tung gia tri 
+		b1[b_length1]=matran[x1][y1];
+		b2[b_length2]=matran[x2][y2];
+		b_length1++;
+		b_length2++;
+		total1+=matran[x1][y1];
+		total2+=matran[x2][y2]; 
 	
 	//danh dau o da di qua
 	visited[x1][y1]=true;
-	visited[x2][y2]=true;
+	visitedByRobot1[x2][y2]=true;
 	
 	//di chuyen toi o co gia tri lon nhat xuung quanh robot1
 	moveToMaxNeighbor(x1, y1);
@@ -162,37 +220,53 @@ void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, 
 	moveToMaxNeighbor(x2, y2);
 	
 	//de quy tim duong di toi uu cho 2 robot
-	toiuu2robot(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2);
+	KoTrung(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2);
 	
 	//tro lai vi tri ban dau và visited
 	b_length1--;
 	b_length2--;
 	visited[x1][y1]=false;
-	visited[x2][y2]=false;
+	visitedByRobot1[x2][y2]=false;
 } 
+
 int main() {
 	int choice, total, total1; 
+	drawBoard();
 	do{
-    cout<<"0=====================~~~@MENU@~~~===================0\n";
-    cout<<"|                                                    |\n"; 
-    cout<<"|    	          ~~$GREEDY ROBOTS$~~	             |\n"; 
-    cout<<"|                                                    |\n"; 
-    cout<<"| -------------------------------------------------- |\n"; 
-	cout<<"| Choose Mode (1-4):                                 |\n"; 
-    cout<<"| 1.Tim duong di toi uu cho robot(Normal Mode).      |\n";
-	cout<<"| 2.Tim duong di toi uu cho 2 robot va khong duoc    |\n";
-	cout<<"| di lai nhung vi tri ma robot da di.                |\n"; 
-	cout<<"| va cac diem trung.                                 |\n";
-	cout<<"| 3.Dat vi tri bat ky cho 2 robot ko di lai vtri cu. |\n";
-	cout<<"| 4.Thoat (ESC).                                     |\n";
-	cout<<"| --------------------------------------------       |\n"; 
-	cout<<"|    	    ~~~~~~~Other Information~~~~~~           |\n";
-	cout<<"| 5. About Me.		                             |\n"; 
-	cout<<"| 6. Game Rules                                      |\n"; 
-	cout<<"| 7. See My Other Project!                           |\n"; 
-	cout<<"0====================================================0\n"; 
+		for(int i = 0; i <= 28; i++){
+    	usleep(100000);  
+    	cout << "^~";  
+  		} 
+  	cout<<endl<<endl; 
+	  
+    cout<<"0======================~~~@MENU@~~~====================0\n";
+    cout<<"|                                                      |\n"; 
+    cout<<"|    	          ~~$GREEDY ROBOTS$~~	               |\n"; 
+    cout<<"|                                                      |\n";  
+    cout<<"| ---------------------------------------------------- |\n"; 
+	cout<<"| Choose Mode (1-4):                                   |\n"; 
+    cout<<"| 1.Tim duong di toi uu cho robot(Normal Mode).        |\n";
+	cout<<"| 2.Tim duong di toi uu cho 2 robot va cac diem trung. |\n"; 
+	cout<<"| 3.Dat vi tri bat ky cho 2 robot ko di lai vtri cu.   |\n";
+	cout<<"| 4.Thoat (ESC).                                       |\n";
+	cout<<"| ---------------------------------------------------- |\n"; 
+	cout<<"|    	    ~~~~~~~Other Information~~~~~~             |\n";
+	cout<<"| 5. About Me.		                               |\n"; 
+	cout<<"| 6. Game Rules                                        |\n"; 
+	cout<<"| 7. See My Other Project!                             |\n"; 
+	cout<<"0======================================================0\n"; 
 	cin>>choice;
 	
+	if (choice == 4) {
+        cout << "Hen gap lai";
+        for (int i = 1; i <= 3; i++) {
+            sleep(1);
+            cout << "! ";
+        }
+        cout << endl;
+        break;
+    }
+        
 	ifstream input_file("input.txt");
     // Kiem tra xem file input.txt có ton tai hay không
     if (!input_file) {
@@ -211,7 +285,10 @@ int main() {
 	switch(choice){
 		case 1:
 			{
-        		int start_x = 0, start_y = 0;
+        		int start_x, start_y;
+        		cout<<"Hay nhap vi tri bat dau cho robot: "<<endl;
+				cin>>start_x>>start_y; 
+				cout<<">> >>Ban dat Robot o vi tri: "<<"dong: "<<start_x<<" "<<"cot: "<<start_y<<endl; 
         		// Goi hàm tim duong di toi uu cho 1 robot
         		toiuu(start_x, start_y, arr, 0, 0);
         
@@ -226,8 +303,14 @@ int main() {
         		for (int i = 0; i < size; i++) {
             		output_file << arr[i] << " ";
         		}
+        		cout<<"Dang tien hanh tim duong di cho robot: ";
+        		for(int i=0; i<=2; i++){
+        			sleep(1);
+					cout<<". "; 
+				} 
+				cout<<endl; 
         		output_file.close();
-        		cout << "duong di toi uu cua 1 robot duoc ghi vào file output.txt" << endl; 
+        		cout << "Duong di toi uu cua robot duoc ghi vào File output.txt" << endl; 
     		}
 			break;
 			
@@ -246,7 +329,9 @@ int main() {
 				cin>>start_x2>>start_y2; 
 				
         		// Goi hàm tim duong di toi uu cho 2 robot
-    			toiuu2robot(start_x1, start_y1, start_x2, start_y2, arr1, arr2, 0, 0, 0, 0);
+    			toiuu2robot(start_x1, start_y1, start_x2, start_y2, arr1, arr2, 0, 0, 0, 0); 
+    			printUpdatedBoard();
+    			get_robotMove();
 
     			// Ghi ket qua vào file output.txt
     			ofstream output_file("output.txt");
@@ -328,7 +413,7 @@ int main() {
 				cin>>start_x2>>start_y2; 
 				
         		// Goi hàm tim duong di toi uu cho 2 robot
-    			toiuu2robot(start_x1, start_y1, start_x2, start_y2, arr1, arr2, 0, 0, 0, 0);
+    			KoTrung(start_x1, start_y1, start_x2, start_y2, arr1, arr2, 0, 0, 0, 0);
 
     			// Ghi ket qua vào file output.txt
     			ofstream output_file("output.txt");
@@ -367,9 +452,10 @@ int main() {
     			}
     			
     			output_file << endl; 
-    			output_file <<"Score: "<<score2; 
+    			output_file <<"Score: "<<score2<<endl; 
     			
     			// So sanh so buoc cua hai robot
+    			output_file <<"The winners is: "<< endl;
     			if (total1 < total) {
         			output_file << endl;
         			output_file << "Robot 1 Win!" << endl;
@@ -387,14 +473,11 @@ int main() {
 			}
 			break;
 		
-		case 4: 
-			{
-				
-			}
-			break; 
-		
 		case 5:
-			cout<<"_________________________________________________\n"; 
+			for(int i=1; i<=49; i++){
+				usleep(10000);
+				cout<<"_"; 
+			} 
 			cout<<endl; 
 			cout<<"     Student: Vu Nguyen Phuong\n";
 			cout<<endl; 
@@ -403,12 +486,15 @@ int main() {
 			cout<<"     Class: CN22H\n";
 			cout<<endl; 
 			cout<<"     School: University Of Transport HCM City\n"; 
-			cout<<"_________________________________________________\n"; 
+			for(int i=1; i<=49; i++){
+				usleep(10000);
+				cout<<"_"; 
+			} 
+			cout<<endl; 
 			break;
 			
 		case 6:
-			{
-			
+			{ 
 				cout<<"0=======================================================================0\n";
 				cout<<"|                                                                       |\n"; 
 				cout<<"|                          ~~~RULES~~~                                  |\n";
@@ -443,7 +529,7 @@ int main() {
 			break;
 			 
 		default:
-			cout<<"lua chon cua ban ko hop le"; 
+			cout<<"Lua chon cua ban ko hop le"; 
 		}
 		cout<<endl; 
 		
