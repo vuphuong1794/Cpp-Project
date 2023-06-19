@@ -1,13 +1,14 @@
 Robot 1 
-Steps Robot: 10
-Robot Path: 16 56 43 54 154 178 76 27 4 3 
-Score: 611
+Steps Robot: 13
+Robot Path: 2 3 4 27 76 178 154 150 200 99 32 54 43 
+Score: 1022
 
 Robot 2 
-Steps Robot: 10
-Robot Path: 87 90 100 101 66 543 200 150 32 99 
-Score: 1468
+Steps Robot: 13
+Robot Path: 16 56 87 90 100 101 66 543 200 99 32 54 43 
+Score: 1487
 
 Vi tri ma hai robot di trung nhau:
+200 99 32 54 43 
+Draw!
 
-Robot 2 Win!
