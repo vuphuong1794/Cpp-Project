@@ -1,4 +1,10 @@
+Robot 1 
+Robot Path: 2 3 4 27 76 178 154 150 200 
+Steps Robot: 9
 
-Cac gia tri cua robot: 
-Tong gia tri cua robot: 0
-So o ma robot da di: 0
+
+
+Robot 2 
+Robot Path: 16 56 87 90 100 101 66 543 99 
+Steps Robot: 9
+
