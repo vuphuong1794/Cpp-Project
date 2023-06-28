@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
@@ -26,13 +25,22 @@ bool visited[100][100];
 int rows, cols;
 
 int board[][5]={{2, 1, 14, 12, 17},
-				{3, 16, 22, 91, 23},
-				{4, 56, 87, 31, 65},
-				{27, 43, 90, 100, 101},
-				{76, 54, 32, 99, 66},
-				{178, 154, 150, 200, 543}}; 
+{3, 16, 22, 91, 23},
+{4, 56, 87, 31, 65},
+{27, 43, 90, 100, 101},
+{76, 54, 32, 99, 66},
+{178, 154, 150, 200, 543}}; 
 
-int board2[16][16];
+int board2[10][10]={{51, 98, 57, 6, 18, 97, 62, 21, 93, 4},
+{80, 25, 87, 53, 48, 82, 64, 11, 46, 16},
+{26, 86, 36, 13, 76, 34, 74, 59, 91, 68},
+{75, 39, 85, 60, 40, 30, 33, 43, 70, 67},
+{73, 89, 65, 42, 54, 69, 5, 35, 78, 83},
+{19, 9, 22, 3, 29, 95, 61, 32, 24, 56},
+{7, 10, 37, 27, 81, 77, 99, 63, 41, 84},
+{92, 12, 20, 72, 8, 38, 71, 45, 55, 88},
+{50, 58, 66, 44, 15, 94, 31, 28, 79, 49},
+{90, 23, 14, 17, 1, 96, 2, 47, 52, 100}};
 
 void drawBoard(){
 	cout<<"_____"<<"______"<<"_____"<<"_____"<<"______"<<endl; 
@@ -61,7 +69,6 @@ string intToString(int value) {
     return oss.str();
 }
 
-// Hàm tính tinh tung gia tri cua 1 mang 
 int totalArray(int arr[], int size) {
     int sum = 0;
     for (int i = 0; i < size; i++) {
@@ -75,7 +82,7 @@ bool hopLe(int x, int y) {
     return (x >= 0 && x < rows && y >= 0 && y < cols && !visited[x][y]); 
 } 
 
-// Hàm di chuy?n ??n ô có giá tr? l?n nh?t xung quanh
+// di chuyen den o xung quanh co gtri lon nhat 
 bool findMaxNeighbor(int& x, int& y) { //allVisited dung cho mang trung 
     int maxVal = 0;
     int newStart_x = 0, newStart_y = 0;
@@ -98,20 +105,17 @@ bool findMaxNeighbor(int& x, int& y) { //allVisited dung cho mang trung
             }
         }
     }
-
-     //N?u t?t c? các ô xung quanh ?? ???c ?i qua, d?ng l?i
+     //neu tat ca o xung quanh di het  
     if (allVisited) {
         return false;
     }
 	
-    // Di chuy?n t?i ô có giá tr? l?n nh?t
     x = newStart_x;
     y = newStart_y;
     return true;
 }
 
-vector<Point> path;
-// Ham de quy tim duong di toi uu 
+vector<Point> path, path2;
 void toiuu(int x, int y, int b[], int b_length, int total) {
     // Kiem tra dieu kien dung  
     if (!hopLe(x, y)) {
@@ -130,21 +134,17 @@ void toiuu(int x, int y, int b[], int b_length, int total) {
     b_length++;
     total += matran[x][y];
 
-    // Danh dau o da di qua
     visited[x][y] = true;
-
-    // Di chuyen den o co gia tri lon nhat xung quanh
     findMaxNeighbor(x, y);
 
     toiuu(x, y, b, b_length, total);
 
-    // Tro lai vi tri ban dau cua duong di và visited
     b_length--;  
     visited[x][y] = false;
 }
+
 vector<Point> point1, point2; 
 void toiuu2(int x2, int y2, int b2[], int b_length2, int total2) {
-    // Kiem tra dieu kien dung  
     if (!hopLe(x2, y2)) {
         // Kiem tra xem duong di hien tai co toi uu không
         if (totalArray(b2, b_length2) == total2) {
@@ -161,71 +161,20 @@ void toiuu2(int x2, int y2, int b2[], int b_length2, int total2) {
     b_length2++;
     total2 += matran[x2][y2];
 
-    // Danh dau o da di qua
     visited[x2][y2] = true;
 
-    // Di chuyen den o co gia tri lon nhat xung quanh
     findMaxNeighbor(x2, y2);
 
     toiuu2(x2, y2, b2, b_length2, total2);
 
-    // Tro lai vi tri ban dau cua duong di và visited
     b_length2--;  
     visited[x2][y2] = false;
 }
 
- /*
-vector<Point> point1, point2;  
-void toiuu2robot(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, int b_length2, int total1, int total2){
-	if(!hopLe(x1, y1) || !hopLe(x2, y2)){
-		if(totalArray(b1, b_length1) == total1 || totalArray(b2, b_length2) == total2){
-			size1=b_length1;
-			size2=b_length2;
-			for(int i=0; i<b_length1; i++){
-			 	arr1[i]=b1[i];
-			} 
-			for(int i=0; i<b_length2; i++){
-				arr2[i]=b2[i]; 
-			} 
-		}
-		return; 
-	} 
-	
-	//cap nhat duong di va tung gia tri
-	b1[b_length1]=matran[x1][y1];
-	point1.push_back(Point(x1, y1, matran[x1][y1]));
-	b2[b_length2]=matran[x2][y2];
-	point2.push_back(Point(x2, y2, matran[x2][y2]));
-	b_length1++;
-	b_length2++;
-	total1+=matran[x1][y1];
-	total2+=matran[x2][y2]; 
-	
-	//danh dau o da di qua
-	visited[x1][y1]=true;
-	visited[x2][y2]=true;
-	
-	//di chuyen toi o co gia tri lon nhat xuung quanh robot1
-	findMaxNeighbor(x1, y1);
-	//di chuyen toi o co gia tri lon nhat xung quanh robot2
-	findMaxNeighbor(x2, y2);
-	
-	//de quy tim duong di toi uu cho 2 robot
-	toiuu2robot(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2);
-	
-	//tro lai vi tri ban dau và visited
-	b_length1--;
-	b_length2--;
-	visited[x1][y1]=false;
-	visited[x2][y2]=false; 
-} 
-*/
-
 void findDistinctNeighbor(int& x, int& y, int currentValue, bool visited[100][100]) {
     int newstartx = 0, newstarty = 0;
-    int dx[] = {-1, 1, 0, 0}; // Offsets for neighboring cells (up, right, down, left)
+    int dx[] = {-1, 1, 0, 0}; 
     int dy[] = {0, 0, -1, 1};
-
     for (int i = 0; i < 4; i++) {
         int nx = x + dx[i];
         int ny = y + dy[i];
@@ -240,54 +189,42 @@ void findDistinctNeighbor(int& x, int& y, int currentValue, bool visited[100][10
     y = newstarty;
 }
 
- vector<int> uniqueArr1, uniqueArr2;
-void test2(int x, int y, int x2, int y2, int b[], int b2[], int b_length, int b_length2, int total, int total2) {
-    toiuu(x, y, b, b_length, total);
-    toiuu2(x2, y2, b2, b_length2, total2);
-
-    // T?m các s? không gi?ng trong m?ng arr và thêm vào uniqueArr1
-    for (int i = 0; i < size; i++) {
-        bool found = false;
-        for (int j = 0; j < size2; j++) {
-            if (arr[i] == arr2[j]) {
-                found = true;
-                break;
+void toiuu3(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length, int total) {
+    // Ki?m tra ði?u ki?n d?ng
+    if (!hopLe(x1, y1) || !hopLe(x2, y2)) {
+        // Ki?m tra xem ðý?ng ði hi?n t?i có t?i ýu không
+        if (totalArray(b1, b_length) + totalArray(b2, b_length) == total) {
+            size = b_length;
+            for (int i = 0; i < b_length; i++) {
+                arr[i] = b1[i];
+                arr2[size + i] = b2[i];
             }
         }
-        if (!found) {
-            uniqueArr1.push_back(arr[i]);
-        }
+        return;
     }
+	if(matran[x2][y2]==matran[x1][y1]){
+		findDistinctNeighbor(x2, y2, matran[x1][y1], visited); 
+	} 
+    b1[b_length] = matran[x1][y1];
+    b2[b_length] = matran[x2][y2];
+    path.push_back(Point(x1, y1, matran[x1][y1]));
+    path2.push_back(Point(x2, y2, matran[x2][y2]));
+    b_length++;
+    total += matran[x1][y1] + matran[x2][y2];
 
-    // T?m các s? không gi?ng trong m?ng arr2 và thêm vào uniqueArr2
-    for (int i = 0; i < size2; i++) {
-        bool found = false;
-        for (int j = 0; j < size; j++) {
-            if (arr2[i] == arr[j]) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            uniqueArr2.push_back(arr2[i]);
-        }
-    }
+    visited[x1][y1] = true;
+    visited[x2][y2] = true;
 
-    // C?p nh?t m?ng arr và arr2
-    size = uniqueArr1.size();
-    size2 = uniqueArr2.size();
+    findMaxNeighbor(x1, y1);
+    findMaxNeighbor(x2, y2);
 
-    for (int i = 0; i < size; i++) {
-        arr[i] = uniqueArr1[i];
-    }
+    toiuu3(x1, y1, x2, y2, b1, b2, b_length, total);
 
-    for (int i = 0; i < size2; i++) {
-        arr2[i] = uniqueArr2[i];
-    }
+    b_length--;
+    visited[x1][y1] = false;
+    visited[x2][y2] = false;
 }
-
-
-
+ /*
 void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, int b_length2, int total1, int total2) {
     int new_arr2[100], s2 = 0;
     toiuu(x1, y1, b1, b_length1, total1);
@@ -322,11 +259,11 @@ void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, 
         uniqueArr2.push_back(int(arr2[i]));
     }
 }
-
+*/
 
 void xoaMangVisited(){
-	for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 5; j++) {
+	for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             visited[i][j] = false;
         }
 	}
@@ -335,7 +272,6 @@ void xoaMangVisited(){
 void displayMatrix(const vector<vector<int> >& matrix, const vector<Point>& path) {
     int rows = matrix.size();
     int columns = matrix[0].size();
-
     vector<vector<string> > displayMatrix(rows, vector<string>(columns));
 
     for (int i = 0; i < rows; i++) {
@@ -343,7 +279,6 @@ void displayMatrix(const vector<vector<int> >& matrix, const vector<Point>& path
             displayMatrix[i][j] = intToString(matrix[i][j]);
         }
     }
-
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             cout << setw(3) << displayMatrix[i][j] << " ";
@@ -351,13 +286,10 @@ void displayMatrix(const vector<vector<int> >& matrix, const vector<Point>& path
         cout << endl;
     }
     cout << endl;
-
     for (vector<Point>::const_iterator it = path.begin(); it != path.end(); ++it) {
         displayMatrix[it->x][it->y] = "  \033[1;31mX\033[0m"; //doi o di qua thanh X mau do 
-
         // Xóa màn hinh
         system("cls");
-
         //hien thi robot di chuyen 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -373,17 +305,12 @@ void displayMatrix(const vector<vector<int> >& matrix, const vector<Point>& path
 void displayMatrix2(const vector<vector<int> >& matrix, const vector<Point>& point1, const vector<Point>& point2) {
     int rows = matrix.size();
     int columns = matrix[0].size();
-
     vector<vector<string> > displayMatrix(rows, vector<string>(columns));
-
-    // Initialize the display matrix with values from the integer matrix
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             displayMatrix[i][j] = intToString(matrix[i][j]);
         }
     }
-
-    // Display the initial matrix
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             cout << setw(3) << displayMatrix[i][j] << " ";
@@ -391,17 +318,13 @@ void displayMatrix2(const vector<vector<int> >& matrix, const vector<Point>& poi
         cout << endl;
     }
     cout << endl;
-
     // Display the robot 1 movement on the matrix
     for (int k = 0; k < point1.size(); k++) {
         int x1 = point1[k].x;
         int y1 = point1[k].y;
 
         displayMatrix[x1][y1] = "  \033[1;31mX\033[0m"; // Change the cell value to "X" in red for robot 1
-
-        // Clear the screen
         system("cls");
-
         // Display the matrix with robot 1 movement
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -410,27 +333,20 @@ void displayMatrix2(const vector<vector<int> >& matrix, const vector<Point>& poi
             cout << endl;
         }
         cout << endl;
-
         Sleep(500);
     }
-
     // Reset the display matrix
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             displayMatrix[i][j] = intToString(matrix[i][j]);
         }
     }
-
     // Display the robot 2 movement on the matrix
     for (int k = 0; k < point2.size(); k++) {
         int x2 = point2[k].x;
         int y2 = point2[k].y;
-
         displayMatrix[x2][y2] = "  \033[1;34mO\033[0m"; // Change the cell value to "O" in blue for robot 2
-
-        // Clear the screen
         system("cls");
-
         // Display the matrix with robot 2 movement
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -458,41 +374,23 @@ void displayMatrix2(const vector<vector<int> >& matrix, const vector<Point>& poi
         displayMatrix[x2][y2] = "  \033[1;34mO\033[0m";
     }
 }
-/*
-const vector<int> path2; 
-void displayMatrix3(const vector<vector<int> >& matrix, const vector<Point>& path, const vector<int>& path2) {
+
+void displayMatrix4(const vector<vector<int> >& matrix, const vector<Point>& path1, const vector<Point>& path2) {
     int rows = matrix.size();
     int columns = matrix[0].size();
-
     vector<vector<string> > displayMatrix(rows, vector<string>(columns));
-
-    // Initialize the display matrix with values from the integer matrix
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             displayMatrix[i][j] = intToString(matrix[i][j]);
         }
     }
-
-    // Display the initial matrix
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            cout << setw(3) << displayMatrix[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-
-    // Display the robot 1 movement on the matrix
-    for (int k = 0; k < path.size(); k++) {
-        int x1 = path[k].x;
-        int y1 = path[k].y;
-
-        displayMatrix[x1][y1] = "  \033[1;31mX\033[0m"; // Change the cell value to "X" in red for robot 1
-
-        // Clear the screen
+    for (int k = 0; k < max(path1.size(), path2.size()); k++) {
         system("cls");
+        // Hi?n th? ma tr?n v?i robot 1
+        if (k < path1.size()) {
+            displayMatrix[path1[k].x][path1[k].y] = "  \033[1;31mX\033[0m"; // Robot 1: Ch? X màu ð?
+        }
 
-        // Display the matrix with robot 1 movement
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 cout << setw(3) << displayMatrix[i][j] << " ";
@@ -500,28 +398,13 @@ void displayMatrix3(const vector<vector<int> >& matrix, const vector<Point>& pat
             cout << endl;
         }
         cout << endl;
-
-        usleep(10000);
-    }
-
-    // Reset the display matrix
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            displayMatrix[i][j] = intToString(matrix[i][j]);
-        }
-    }
-
-    // Display the robot 2 movement on the matrix
-    for (int k = 0; k < path2.size(); k++) {
-        int x2 = path2[k].x;
-        int y2 = path2[k].y;
-
-        displayMatrix[x2][y2] = "  \033[1;34mO\033[0m"; // Change the cell value to "O" in blue for robot 2
-
-        // Clear the screen
+        Sleep(750);
         system("cls");
+        // Hi?n th? ma tr?n v?i robot 2
+        if (k < path2.size()) {
+            displayMatrix[path2[k].x][path2[k].y] = "  \033[1;34mO\033[0m"; // Robot 2: Ch? O màu xanh
+        }
 
-        // Display the matrix with robot 2 movement
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 cout << setw(3) << displayMatrix[i][j] << " ";
@@ -529,25 +412,10 @@ void displayMatrix3(const vector<vector<int> >& matrix, const vector<Point>& pat
             cout << endl;
         }
         cout << endl;
-
-        usleep(10000);
+        Sleep(750);
     }
+}
 
-    // Change the cells visited by the robots to "X" and "O" respectively
-    for (int k = 0; k < path.size(); k++) {
-        int x1 = path[k].x;
-        int y1 = path[k].y;
-
-        displayMatrix[x1][y1] = "  \033[1;31mX\033[0m";
-    }
-
-    for (int k = 0; k < path2.size(); k++) {
-        int x2 = path2[k].x;
-        int y2 = path2[k].y;
-
-        displayMatrix[x2][y2] = "  \033[1;34mO\033[0m";
-    }
-}*/
 int main() {
 	int choice; 
 	int start_x1, start_y1;
@@ -558,7 +426,7 @@ int main() {
 	for(int i = 0; i <= 59; i++){
     	usleep(10000);  
     	cout << "^~";  
-  	} 
+	} 
   	cout<<endl<<endl; 
   	// Ma màu ANSI de chuyen doi màu
     string blue = "\033[1;34m";
@@ -634,23 +502,18 @@ int main() {
         }
 	}
     input_file.close();	
-    for (int i = 0; i < 13; i++) {
-        for (int j = 0; j < 13; j++) {
-            board2[i][j] = rand() % 100; 
-        }
-    }
 	switch(choice){
 		case 1:
 			{
 				cout<<"so do di goc!"<<endl;
-				drawBoard(); 
-				    /* In ma tr?n
-    				for (int i = 0; i < 16; ++i) {
-        				for (int j = 0; j < 16; ++j) {
+				//drawBoard(); 
+				    // In ma tran
+    				for (int i = 0; i < rows; ++i) {
+        				for (int j = 0; j < cols; ++j) {
             				cout << board2[i][j] << " ";
        	 				}
         				cout << endl;
-    				}*/
+    				}
         		do{ 
         			cout<<"Hay nhap vi tri bat dau cho robot: "<<endl;
 					cin>>start_x>>start_y; 
@@ -663,7 +526,7 @@ int main() {
 		
 				for (int i = 0; i < rows; i++) {
     				for (int j = 0; j < cols; j++) {
-        				matran[i][j] = board[i][j];
+        				matran[i][j] = board2[i][j];
     				}
 				}
 				cout<<"Dang tien hanh tim duong di cho robot: ";
@@ -678,7 +541,6 @@ int main() {
 
         		cout<<"=>> Duong di cua Robot 1!"<<endl; 
         		cout<<endl; 
-        		
         		// Ghi ket qua vào file output.txt
         		ofstream output_file("output.txt");
         		if (!output_file) {
@@ -702,11 +564,17 @@ int main() {
 		case 2:
 			{
 				vector<Point> path1;
+				for (int i = 0; i < rows; ++i) {
+        			for (int j = 0; j < cols; ++j) {
+            			cout << board2[i][j] << " ";
+       	 			}
+        			cout << endl;
+    			}
 				int mangTrung[1000];
 				int trung=0;  
         		int score1=0, score2=0;
         		cout<<"So do goc!\n";
-				drawBoard(); 
+				//drawBoard(); 
 				cout<<endl; 
 				do{ 
         			cout<<"nhap vi tri bat dau cua robot 1: \n";
@@ -730,10 +598,9 @@ int main() {
     			toiuu2(start_x2, start_y2, arr2, 0, 0); 
     			path= path1;
 				vector<vector<int> > matran(rows, vector<int>(cols));
-				// Populating the matran array with values from the board array
 				for (int i = 0; i < rows; i++) {
     				for (int j = 0; j < cols; j++) {
-        				matran[i][j] = board[i][j];
+        				matran[i][j] = board2[i][j];
     				}
 				}
 				
@@ -748,9 +615,7 @@ int main() {
     			}
 				
 				cout<<"'X' la duong di cua robot 1 va 'O' la duong di robot 2";
-        		
 				cout<<endl<<endl;
-				
     			output_file << "Robot 1 " << endl; 
     			output_file <<"Robot Steps: "<< size << endl;
     			output_file <<"Robot Path: " ;
@@ -839,7 +704,12 @@ int main() {
 				 
 		case 3:
 			{	
-				
+			   for (int i = 0; i < rows; ++i) {
+        			for (int j = 0; j < cols; ++j) {
+            			cout << board2[i][j] << " ";
+       	 			}
+        			cout << endl;
+    			}
         		int score1=0, score2=0;
         		int step1=0, step2=0; 
         		int new_arr1[100], new_arr2[100]; 
@@ -862,59 +732,15 @@ int main() {
 				//lay du lieu tu ma tran board 
 				for (int i = 0; i < rows; i++) {
     				for (int j = 0; j < cols; j++) {
-        				matran[i][j] = board[i][j];
+        				matran[i][j] = board2[i][j];
     				}
 				}
-	/*			
-toiuu(start_x1, start_y1, arr, 0, 0);
-toiuu2(start_x2, start_y2, arr2, 0, 0);
-
-// Check and filter values in arr2
-for (int i = 0; i < size2; i++) {
-    bool found = false;
-    if(i==0){ 
-    	found=false; 
-	} 
-    for (int j = 0; j < size; j++) {
-        if (arr2[i] == arr[j]) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        int currentVal = arr2[i];
-        int current_x = point2[i].x;
-        int current_y = point2[i].y;
-        //bool isValid = true;
-
-        // Ki?m tra các ô xung quanh
-        int dx[] = {-1, 1, 0, 0}; // hàng
-        int dy[] = {0, 0, -1, 1}; // c?t
-		bool isValid=true;
-        for (int k = 0; k < 4; k++) {
-            int nx = current_x + dx[k];
-            int ny = current_y + dy[k];
-			 
-            // Ki?m tra ?i?u ki?n
-            if (!(nx >= 0 && nx < rows && ny >= 0 && ny < cols && !visited[nx][ny] && matran[nx][ny] != currentVal)) {
-                isValid = false;
-                break;
-            }
-        }
-
-        if (isValid) {
-            new_arr2[s2] = currentVal;
-             
-            s2++;
-        }
-    }
-    
-} */
-KoTrung(start_x1, start_y1, start_x2, start_y2, arr, arr2, 0, 0, 0, 0);
-    			/*
-    			displayMatrix2(matran, path, uniqueArr2); 
+				//KoTrung(start_x1, start_y1, start_x2, start_y2, arr, arr2, 0, 0, 0, 0);
+				toiuu3(start_x1, start_y1, start_x2, start_y2, arr, arr2, 0 , 0);
+    			
+    			displayMatrix4(matran, path, path2); 
 				path.clear();
-				uniqueArr2.clear();*/
+				path2.clear();
 				cout<<endl; 
 				cout<<"'X' la duong di cua robot 1 va 'O' la duong di robot 2\n\n"; 
     			ofstream output_file("output.txt");
@@ -942,7 +768,7 @@ KoTrung(start_x1, start_y1, start_x2, start_y2, arr, arr2, 0, 0, 0, 0);
     			
     			output_file << "Robot 2 "<< endl; 
     			output_file << "Robot Path: ";
-    			for (int i = 0; i < size2; i++) {
+    			for (int i = 0; i < size; i++) {
         			step2++;
         			output_file << arr2[i] <<" ";
 					score2+=arr2[i];
@@ -1022,10 +848,10 @@ KoTrung(start_x1, start_y1, start_x2, start_y2, arr, arr2, 0, 0, 0, 0);
 				cout<<"|                                                                       |\n"; 
 				cout<<"|                                                                       |\n";
 				cout<<"|           _ _ _ _  _    _  _        _ _ _ _  _ _ _ _                  |" << endl;
-     			cout<<"|          |    _  \\|  | |  |  |     |  _ _ _ /  _ _ _|                 |" << endl;
+     			cout<<"|          |    _  \\|  | |  |  |     |  _ _ _| /  _ _ _|                |" << endl;
     			cout<<"|          |   |_)  |  | |  |  |     |    _|  \\_ _   \\                  |" << endl;
     			cout<<"|          |    _  <|  |_|  |  |_ _ _|  |_ _ _ _ _ )  |                 |" << endl;
-    			cout<<"|          | _ | \\_  \\_ _ _/| _ _ _ _|_ _ _ _|_ _ _ _ /                 |" << endl;
+    			cout<<"|          | _ | \\_  \\_ _ _/| _ _ _ _|_ _ _ _|_ _ _ _/                  |" << endl;
     			cout<<"|                                                                       |\n";
 				cout<<"|                                                                       |\n";
 				cout<<"| (+) Robots di theo 4 huong (tren, duoi, trai, phai)                   |\n";
