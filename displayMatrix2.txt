@@ -1,0 +1,141 @@
+void displayMatrix2(const vector<vector<int> >& matrix, const vector<Point>& point1, const vector<Point>& point2) {
+    int rows = matrix.size();
+    int columns = matrix[0].size();
+
+    vector<vector<string> > displayMatrix(rows, vector<string>(columns));
+
+    // Initialize the display matrix with values from the integer matrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            displayMatrix[i][j] = intToString(matrix[i][j]);
+        }
+    }
+
+    // Display the initial matrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            cout << setw(3) << displayMatrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+    // Display the robot 1 movement on the matrix
+    for (int k = 0; k < point1.size(); k++) {
+        int x1 = point1[k].x;
+        int y1 = point1[k].y;
+
+        displayMatrix[x1][y1] = "  \033[1;31mX\033[0m"; // Change the cell value to "X" in red for robot 1
+
+        // Clear the screen
+        system("cls");
+
+        // Display the matrix with robot 1 movement
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                cout << setw(3) << displayMatrix[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+
+        Sleep(1000);
+    }
+
+    // Reset the display matrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            displayMatrix[i][j] = intToString(matrix[i][j]);
+        }
+    }
+
+    // Display the robot 2 movement on the matrix
+    for (int k = 0; k < point2.size(); k++) {
+        int x2 = point2[k].x;
+        int y2 = point2[k].y;
+
+        displayMatrix[x2][y2] = "  \033[1;34mO\033[0m"; // Change the cell value to "O" in blue for robot 2
+
+        // Clear the screen
+        system("cls");
+
+        // Display the matrix with robot 2 movement
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                cout << setw(3) << displayMatrix[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+
+        Sleep(1000);
+    }
+
+    // Change the cells visited by the robots to "X" and "O" respectively
+    for (int k = 0; k < point1.size(); k++) {
+        int x1 = point1[k].x;
+        int y1 = point1[k].y;
+
+        displayMatrix[x1][y1] = "  \033[1;31mX\033[0m";
+    }
+
+    for (int k = 0; k < point2.size(); k++) {
+        int x2 = point2[k].x;
+        int y2 = point2[k].y;
+
+        displayMatrix[x2][y2] = "  \033[1;34mO\033[0m";
+    }
+}
+
+void KoTrung(int x1, int y1, int x2, int y2, int b1[], int b2[], int b_length1, int b_length2, int total1, int total2, bool robot1Moved) {
+    if(!robot1Moved){
+    	if(!hopLe(x1, y1)){
+    		if(totalArray(b1, b_length1)==total1){
+    			size1=b_length1;
+				for(int i=0; i<b_length1;i++){
+					arr1[i]=b1[i]; 
+				} 
+			}	
+			return; 
+		}
+		b1[b_length1] = matran[x1][y1];
+    	Point1.push_back(Point(x1, y1, matran[x1][y1]));
+    	b_length1++;
+    	total1 += matran[x1][y1];
+
+    	visited[x1][y1] = true;
+
+    	findMaxNeighbor(x1, y1); 
+    	KoTrung(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2, true);
+ 
+    	// Backtrack to the previous position and mark it as unvisited
+    	b_length1--;
+    	visited[x1][y1] = false;
+	} 
+	if(robot1Moved){
+		if(!hopLe(x2, y2)){
+			if(totalArray(b2, b_length2)==total2){
+    			size2=b_length2;
+				for(int i=0; i<b_length2;i++){
+					arr2[i]=b2[i]; 
+				} 
+			}	
+			return; 
+		}
+		if (!visited[x1][y1]) {
+            b2[b_length2] = matran[x2][y2];
+            Point2.push_back(Point(x2, y2, matran[x2][y2]));
+            b_length2++;
+            total2 += matran[x2][y2];
+
+            visited[x2][y2] = true;
+
+            findMaxNeighbor(x2, y2);
+
+            KoTrung(x1, y1, x2, y2, b1, b2, b_length1, b_length2, total1, total2, false);
+
+            b_length2--;
+            visited[x2][y2] = false;
+        }
+	}
+} 

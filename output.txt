@@ -1,10 +1,10 @@
 Robot 1 
-Robot Steps: 13
-Robot Path: 2 3 4 27 76 178 154 150 200 99 32 54 43 
+Robot Steps: 19
+Robot Path: 2 3 16 56 87 90 100 101 66 543 200 150 154 178 76 54 43 27 4 
 
 Robot 2 
-Robot Steps: 13
-Robot Path: 16 56 87 90 100 101 66 543 200 99 32 54 43 
+Robot Steps: 14
+Robot Path: 543 200 150 154 178 76 54 43 90 100 101 66 99 32 
 
 Vi tri ma hai robot di trung nhau:
-200 99 32 54 43 
+90 100 101 66 543 200 150 154 178 76 54 43 
